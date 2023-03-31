@@ -18,7 +18,6 @@
 <html lang="en">
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="A portfolio template that uses Material Design Lite.">
@@ -28,10 +27,16 @@
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.grey-pink.min.css" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="manifest" href="/manifest.json">
-    
 
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script>
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', function() {
+            navigator.serviceWorker.register('sw.js');
+          });
+        }
+      </script>
 </head>
 
 <body>
@@ -203,7 +208,6 @@
         </main>
     </div>
     <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-
 </body>
 
 </html>

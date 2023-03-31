@@ -1,67 +1,82 @@
-const CACHE_NAME = 'portfolio-app-v1';
-const urlsToCache = [
+var CACHE_NAME = 'portfolio-cache';
+var urlsToCache = [
   '/',
   '/index.html',
   '/css/styles.css',
   '/js/main.js',
-  '/images/*'
+  '/images/background.jpg',
+  '/images/icon.png'
 ];
 
-self.addEventListener('install', (event) => {
+self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
+      .then(function(cache) {
+        console.log('Opened cache');
         return cache.addAll(urlsToCache);
       })
   );
 });
 
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', function(event) {
   event.respondWith(
     caches.match(event.request)
-      .then((response) => {
+      .then(function(response) {
         if (response) {
           return response;
         }
 
-        return fetch(event.request)
-          .then((response) => {
+        var fetchRequest = event.request.clone();
+
+        return fetch(fetchRequest)
+          .then(function(response) {
             if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
+                return response;
             }
-
-            const responseToCache = response.clone();
-
+   
+            var responseToCache = response.clone();
+   
             caches.open(CACHE_NAME)
-              .then((cache) => {
+              .then(function(cache) {
                 cache.put(event.request, responseToCache);
               });
-
+   
             return response;
+          })
+          .catch(function(error) {
+            console.error('Error fetching from network:', error);
           });
-      })
-  );
+        })
+    );
 });
-self.addEventListener('install', function(event) {
-    event.waitUntil(
-      caches.open('first-app')
-        .then(function(cache) {
-          cache.addAll([
-            '/',
-            '/index.html'
-          ])
-        })
-    );
-    return self.clients.claim();
-  });
-  
-  self.addEventListener('fetch', function(event) {
+self.addEventListener('fetch', function(event) {
     event.respondWith(
-      caches.match(event.request)
-        .then(function(res) {
-          return res;
-        })
-    );
-  });
-  
-  
+    caches.match(event.request)
+    .then(function(response) {
+    if (response) {
+    return response;
+    }       var fetchRequest = event.request.clone();
+
+    return fetch(fetchRequest)
+      .then(function(response) {
+        if (!response || response.status !== 200 || response.type !== 'basic') {
+          return response;
+        }
+
+        var responseToCache = response.clone();
+
+        caches.open(CACHE_NAME)
+          .then(function(cache) {
+            cache.put(event.request, responseToCache);
+          });
+
+        return response;
+      })
+      .catch(function(error) {
+        console.error('Error fetching from network:', error);
+
+        return caches.match('/offline.html');
+      });
+  })
+);
+});
